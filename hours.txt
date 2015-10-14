@@ -1,0 +1,3 @@
+Date:	Hours:	Description:
+10/3	2	Detecting contours using openCV
+
