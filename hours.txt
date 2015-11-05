@@ -1,3 +1,4 @@
 Date:	Hours:	Description:
 10/3	2	Detecting contours using openCV
 10/14	4.5	Set up git, experimenting with using VLC to play videos
+10/24	3	Basic operation using VLC; a little buggy
