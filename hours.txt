@@ -2,3 +2,7 @@ Date:	Hours:	Description:
 10/3	2	Detecting contours using openCV
 10/14	4.5	Set up git, experimenting with using VLC to play videos
 10/24	3	Basic operation using VLC; a little buggy
+11/6	1	Researching Java runtime.exec command to fix closing of vlc
+11/7	1.5	Got next button working w/ java.io library
+11/13	1	Integrated next button with motion detection
+11/14	2	Finishing touches. Created setup tool. 
