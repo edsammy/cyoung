@@ -47,7 +47,7 @@ void setup() {
     VLCPath = importSettings[1]; 
     settingsFound = true;
   } catch (Exception err) {
-    String[] setupPath = {"open", sketchPath()+"/setup/setup.app"}; 
+    String[] setupPath = {"open", sketchPath()+"/setup/setup.pde"}; 
     exec(setupPath);
     exit();
   }
@@ -134,7 +134,7 @@ void draw() {
 }
 
 void initVLC() {
-  String[] openVLC = {VLCPath+"/Contents/MacOS/VLC", "--fullscreen","--loop", "--random", videosPath};
+  String[] openVLC = {VLCPath+"/Contents/MacOS/VLC", "--fullscreen","--loop", "--random", "--no-video-title-show", videosPath};
   
   // got setup and commands from VLCj:
   // http://berry120.blogspot.com/2011/07/using-vlcj-for-video-reliably-with-out.html
