@@ -22,58 +22,51 @@ Capture rawVideo; // video object used for webcam capture
 OpenCV cv; // open cv object to do processing of motion
 
 // Variable decalarations
-boolean debug, initialFrameCaptured, personInView, queueNextVideo, settingsFound;
+boolean debug, initialFrameCaptured, personInView, queueNextVideo, vlcLoaded;
 PImage initialFrame, raw, diff, threshold, contour;
 float area;
 ArrayList<Contour> contours;
 BufferedWriter out;
 BufferedReader in;
-String videosPath, VLCPath;
+String videosPath, VLCPath, dateStamp, timeStamp;
 
 
 void setup() {
-  debug = false;
-  settingsFound = false;
+  debug = true;
+  vlcLoaded = false;
 
-  size(640, 480);
+  size(640, 580);
   textSize(32);
-  background(51);
+  background(0);
   text("Motion Video Player", 170, 55); 
   
-  // open settings.txt file to read where to load videos and VLC from
-  try {
-    String[] importSettings = loadStrings("setup/settings.txt");
-    videosPath = importSettings[0];
-    VLCPath = importSettings[1]; 
-    settingsFound = true;
-  } catch (Exception err) {
-    String[] setupPath = {"open", sketchPath()+"/setup/setup.pde"}; 
-    exec(setupPath);
-    exit();
-  }
+  videosPath = sketchPath()+"/videos";
+  VLCPath = "/Applications/VLC.app"; 
   
-  if (settingsFound){
-    rawVideo = new Capture(this, 320, 240);
-    cv = new OpenCV(this, 320, 240);
-    
-    rawVideo.start(); // Start webcam capturing
-    initialFrameCaptured = false;
-    personInView = false;
-    queueNextVideo = true;
-    
-    initVLC();
-  }
+  rawVideo = new Capture(this, 320, 240);
+  cv = new OpenCV(this, 320, 240);
+  
+  rawVideo.start(); // Start webcam capturing
+  initialFrameCaptured = false;
+  personInView = false;
+  queueNextVideo = true;
+  
+  // get datetime stamps for error logging
+  dateStamp = String.valueOf(month())+"/"+String.valueOf(day())+"/"+String.valueOf(year());
+  timeStamp = String.valueOf(hour())+":"+String.valueOf(minute());
+  
+  initVLC();
 }
     
 void draw() {
   if (rawVideo.available()) {
-    rawVideo.read();
-    cv.loadImage(rawVideo);
+    rawVideo.read(); // get frame from webcam
+    cv.loadImage(rawVideo); // pass frame to openCV
     if (debug) {
       cv.useColor();
       raw = cv.getSnapshot();
     }
-    cv.useGray();
+    cv.useGray(); // grayscale for easier processing
     cv.blur(20);
     
     if (!initialFrameCaptured) {
@@ -125,10 +118,10 @@ void draw() {
     
     // Live view from camera used for development
     if (debug) {
-      image(raw, 0,0);
-      image(diff, 320, 0);
-      image(contour, 0, 240);
-      image(threshold, 320, 240);
+      image(raw, 0,100);
+      image(diff, 320, 100);
+      image(contour, 0, 340);
+      image(threshold, 320, 340);
     }
   }
 }
@@ -145,6 +138,8 @@ void initVLC() {
     // used to read the output from the command line, not currently being used
     //in = new BufferedReader(new InputStreamReader(p.getInputStream()));
   } catch (Exception err) {
+    String[] errorOutput = {dateStamp, timeStamp, "VLC failed to load"};
+    saveStrings("error.log", errorOutput);
     exit();
   }
 }
@@ -159,6 +154,8 @@ void playNextVideo() {
     out.write("next\n");
     out.flush();
   } catch (Exception err) {
+    String[] errorOutput = {dateStamp, timeStamp, "next video command failed"};
+    saveStrings("error.log", errorOutput);
     exit();
   }
 }
