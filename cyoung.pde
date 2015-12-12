@@ -22,7 +22,7 @@ Capture rawVideo; // video object used for webcam capture
 OpenCV cv; // open cv object to do processing of motion
 
 // Variable decalarations
-boolean debug, initialFrameCaptured, personInView, queueNextVideo, vlcLoaded;
+boolean debug, initialFrameCaptured, personInView, queueNextVideo, vlcLoaded, run;
 PImage initialFrame, raw, diff, threshold, contour;
 float area;
 ArrayList<Contour> contours;
@@ -32,13 +32,16 @@ String videosPath, VLCPath, dateStamp, timeStamp;
 
 
 void setup() {
-  debug = true;
+  debug = false;
   vlcLoaded = false;
+  run = false;
 
   size(640, 580);
   textSize(32);
   background(0);
   text("Motion Video Player", 170, 55); 
+  textSize(14);
+  text("Press 's' to capture background and begin motion detection", 120, 150);
   
   videosPath = sketchPath()+"/videos";
   VLCPath = "/Applications/VLC.app"; 
@@ -54,80 +57,88 @@ void setup() {
   // get datetime stamps for error logging
   dateStamp = String.valueOf(month())+"/"+String.valueOf(day())+"/"+String.valueOf(year());
   timeStamp = String.valueOf(hour())+":"+String.valueOf(minute());
-  
-  initVLC();
+ 
 }
     
 void draw() {
-  if (rawVideo.available()) {
-    rawVideo.read(); // get frame from webcam
-    cv.loadImage(rawVideo); // pass frame to openCV
-    if (debug) {
+  if (run) {
+    if (!vlcLoaded) {
+      initVLC();
+    }
+    if (rawVideo.available()) {
+      rawVideo.read(); // get frame from webcam
+      cv.loadImage(rawVideo); // pass frame to openCV
+      
+      // Use color to display background to the user
       cv.useColor();
       raw = cv.getSnapshot();
-    }
-    cv.useGray(); // grayscale for easier processing
-    cv.blur(20);
-    
-    if (!initialFrameCaptured) {
-      initialFrame = cv.getSnapshot();
-      initialFrameCaptured = true;
-    }
-    
-    cv.diff(initialFrame); // compare the current video frame to the initial frame
-    
-    if (debug) diff = cv.getSnapshot(); // snapshot for dislpay
-    
-    cv.threshold(45); // whitespace where image is above threshold
-    
-    if (debug) threshold = cv.getSnapshot(); // snapshot for dislpay
-    
-    cv.dilate(); // used to find contours
-    
-    contours = cv.findContours(true,true); //find holes, sort by areas
-    
-    if (debug) contour = cv.getSnapshot(); // snapshot for dislpay
-    
-    if (contours.size() == 0) {
-        if (debug) println("No one in view");
+      
+      cv.useGray(); // grayscale for easier processing
+      cv.blur(20);
+      
+      if (!initialFrameCaptured) {
+        initialFrame = cv.getSnapshot();
+        initialFrameCaptured = true;
+        image(raw, 0, 100, 640, 480);
+        textSize(14);
+        text("background", 25, 155); 
+      }
+      
+      cv.diff(initialFrame); // compare the current video frame to the initial frame
+      
+      if (debug) diff = cv.getSnapshot(); // snapshot for dislpay
+      
+      cv.threshold(45); // whitespace where image is above threshold
+      
+      if (debug) threshold = cv.getSnapshot(); // snapshot for dislpay
+      
+      cv.dilate(); // used to find contours
+      
+      contours = cv.findContours(true,true); //find holes, sort by areas
+      
+      if (debug) contour = cv.getSnapshot(); // snapshot for dislpay
+      
+      if (contours.size() == 0) {
+          if (debug) println("No one in view");
+          personInView = false;
+          queueNextVideo = true;
+      }
+      
+      // Check if any contours (new things in the frame when compared to the original) exist
+      if (contours.size() > 0) {
+        area = contours.get(0).area();
+        // See if the first contour is greater than the min area
+        // (only need to look at the first one since they are sorted by size)
+        if (area >= 500) {
+          if (debug) println("Person in view!");
+          personInView = true;
+          if (queueNextVideo) {
+            playNextVideo();
+            queueNextVideo = false;
+          }
+          else {
+            queueNextVideo = false; 
+          }
+        }
+      } else {
+        if (debug) println("Min area not met!");
         personInView = false;
         queueNextVideo = true;
-    }
-    
-    // Check if any contours (new things in the frame when compared to the original) exist
-    if (contours.size() > 0) {
-      area = contours.get(0).area();
-      // See if the first contour is greater than the min area
-      // (only need to look at the first one since they are sorted by size)
-      if (area >= 500) {
-        if (debug) println("Person in view!");
-        personInView = true;
-        if (queueNextVideo) {
-          playNextVideo();
-          queueNextVideo = false;
-        }
-        else {
-          queueNextVideo = false; 
-        }
       }
-    } else {
-      if (debug) println("Min area not met!");
-      personInView = false;
-      queueNextVideo = true;
-    }
-    
-    // Live view from camera used for development
-    if (debug) {
-      image(raw, 0,100);
-      image(diff, 320, 100);
-      image(contour, 0, 340);
-      image(threshold, 320, 340);
+      
+      // Live view from camera used for development
+      if (debug) {
+        image(raw, 0,100);
+        image(diff, 320, 100);
+        image(contour, 0, 340);
+        image(threshold, 320, 340);
+      }
     }
   }
 }
 
 void initVLC() {
-  String[] openVLC = {VLCPath+"/Contents/MacOS/VLC", "--fullscreen","--loop", "--random", "--no-video-title-show", videosPath};
+  String[] openVLC = {VLCPath+"/Contents/MacOS/VLC", "--fullscreen","--loop", "--random", "--repeat", "--mouse-hide-timeout=1", "--no-video-title-show", videosPath};
   
   // got setup and commands from VLCj:
   // http://berry120.blogspot.com/2011/07/using-vlcj-for-video-reliably-with-out.html
@@ -142,6 +153,26 @@ void initVLC() {
     saveStrings("error.log", errorOutput);
     exit();
   }
+  vlcLoaded = true;
+}
+
+void keyPressed() {
+   if (key == 's') { 
+     //background(0);
+     //textSize(32);
+     //text("Motion Video Player", 170, 55); 
+     //textSize(14);
+     //text("Clear the view of the camera!", 120, 150);
+     //textSize(42);
+     //long previousMillis = 0;
+     //long currentMillis = millis();
+     //long timeDelay = 50000;
+     //while (currentMillis - previousMillis >= timeDelay) {
+     //  text(currentMillis,120, 250);
+     //  previousMillis = currentMillis;
+     //}
+     run = true;
+   }
 }
 
 void playNextVideo() {
