@@ -11,8 +11,8 @@ cd /Volumes/vlc-2.2.1 && \
 cp -R VLC.app Applications
 cd ~/motionPlayer
 echo "editing VLC settings file..."
-curl -O --silent https://raw.githubusercontent.com/edsammy/cyoung/master/vlrc && \
-cp vlrc ~/Library/Preferences/org.videolan.vlc
+curl -O --silent https://raw.githubusercontent.com/edsammy/cyoung/master/vlcrc && \
+cp vlcrc ~/Library/Preferences/org.videolan.vlc
 echo "downloading motionPlayer.app"
 curl -O --silent https://raw.githubusercontent.com/edsammy/cyoung/master/motionPlayer.app
 echo "cleaning up..."
