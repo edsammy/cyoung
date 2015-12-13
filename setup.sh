@@ -4,11 +4,17 @@ cd ~
 echo "creating directories..."
 mkdir motionPlayer && cd motionPlayer
 mkdir videos
-echo "downloading VLC media player..."
-curl -O http://mirror.de.leaseweb.net/videolan/vlc/2.2.1/macosx/vlc-2.2.1.dmg && \
-hdiutil attach -quiet vlc-2.2.1.dmg && \
-cd /Volumes/vlc-2.2.1 && \
-cp -R VLC.app Applications
+echo "checking if VLC player is installed..."
+if [ -a /Applications/VLC.app ]
+    then
+    echo "VLC already installed, skipping download..."
+else
+    echo "downloading VLC media player..."
+    curl -O http://mirror.de.leaseweb.net/videolan/vlc/2.2.1/macosx/vlc-2.2.1.dmg && \
+    hdiutil attach -quiet vlc-2.2.1.dmg && \
+    cd /Volumes/vlc-2.2.1 && \
+    cp -R VLC.app Applications
+fi
 cd ~/motionPlayer
 echo "editing VLC settings file..."
 curl -O --silent https://raw.githubusercontent.com/edsammy/cyoung/master/vlcrc && \
