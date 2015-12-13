@@ -13,6 +13,7 @@ else
     curl -O http://mirror.de.leaseweb.net/videolan/vlc/2.2.1/macosx/vlc-2.2.1.dmg && \
     hdiutil attach -quiet vlc-2.2.1.dmg && \
     cd /Volumes/vlc-2.2.1 && \
+    echo "enter password to copy VLC into Applications folder..."
     sudo cp -R VLC.app Applications
 fi
 cd ~/motionPlayer
@@ -23,6 +24,7 @@ if [ -d ~/Library/Preferences/org.videolan.vlc ] # check if directory exists
     echo "VLC settings folder already exists..."
 else
     echo "creating VLC settings folder..."
+    echo "enter password to create folder..."
     sudo mkdir ~/Library/Preferences/org.videolan.vlc
 fi
 sudo cp vlcrc ~/Library/Preferences/org.videolan.vlc
