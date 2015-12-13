@@ -22,14 +22,14 @@ Capture rawVideo; // video object used for webcam capture
 OpenCV cv; // open cv object to do processing of motion
 
 // Variable decalarations
-boolean debug, initialFrameCaptured, personInView, queueNextVideo, vlcLoaded, run;
+boolean debug, initialFrameCaptured, personInView, queueNextVideo, vlcLoaded, run, countdown;
 PImage initialFrame, raw, diff, threshold, contour;
 float area;
 ArrayList<Contour> contours;
 BufferedWriter out;
 BufferedReader in;
 String videosPath, VLCPath, dateStamp, timeStamp;
-
+int startTime, currentTime, countDownDelay, elapsedTime;
 
 void setup() {
   debug = false;
@@ -38,7 +38,7 @@ void setup() {
 
   size(640, 580);
   textSize(32);
-  background(0);
+  background(100);
   text("Motion Video Player", 170, 55); 
   textSize(14);
   text("Press 's' to capture background and begin motion detection", 120, 150);
@@ -57,11 +57,31 @@ void setup() {
   // get datetime stamps for error logging
   dateStamp = String.valueOf(month())+"/"+String.valueOf(day())+"/"+String.valueOf(year());
   timeStamp = String.valueOf(hour())+":"+String.valueOf(minute());
- 
+   
+  countDownDelay = 5500;
+  textSize(20);
 }
     
 void draw() {
-  if (run) {
+  if (!run) {
+    if (countdown) {
+      if (rawVideo.available()) {
+        rawVideo.read(); // get frame from webcam
+        image(rawVideo, 0, 100, 640, 480);
+      }
+      currentTime = millis();
+      elapsedTime = currentTime - startTime;
+      if (elapsedTime < countDownDelay) {
+        text("capturing background in:", 25, 155);
+        text((countDownDelay - elapsedTime)/(1000), 280, 155);
+      }
+      else {
+        countdown = false;
+        run = true;
+      }
+    }
+  }
+  else { // if user has initialized
     if (!vlcLoaded) {
       initVLC();
     }
@@ -80,7 +100,6 @@ void draw() {
         initialFrame = cv.getSnapshot();
         initialFrameCaptured = true;
         image(raw, 0, 100, 640, 480);
-        textSize(14);
         text("background", 25, 155); 
       }
       
@@ -138,7 +157,7 @@ void draw() {
 }
 
 void initVLC() {
-  String[] openVLC = {VLCPath+"/Contents/MacOS/VLC", "--fullscreen","--loop", "--random", "--repeat", "--mouse-hide-timeout=1", "--no-video-title-show", videosPath};
+  String[] openVLC = {VLCPath+"/Contents/MacOS/VLC", "--fullscreen","--loop", "--random", "--repeat", "--mouse-hide-timeout=100", "--no-video-title-show", videosPath};
   
   // got setup and commands from VLCj:
   // http://berry120.blogspot.com/2011/07/using-vlcj-for-video-reliably-with-out.html
@@ -157,22 +176,10 @@ void initVLC() {
 }
 
 void keyPressed() {
-   if (key == 's') { 
-     //background(0);
-     //textSize(32);
-     //text("Motion Video Player", 170, 55); 
-     //textSize(14);
-     //text("Clear the view of the camera!", 120, 150);
-     //textSize(42);
-     //long previousMillis = 0;
-     //long currentMillis = millis();
-     //long timeDelay = 50000;
-     //while (currentMillis - previousMillis >= timeDelay) {
-     //  text(currentMillis,120, 250);
-     //  previousMillis = currentMillis;
-     //}
-     run = true;
-   }
+  if (key == 's') {
+    startTime = millis();
+    countdown = true;
+  }
 }
 
 void playNextVideo() {
