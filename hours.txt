@@ -6,3 +6,5 @@ Date:	Hours:	Description:
 11/7	1.5	Got next button working w/ java.io library
 11/13	1	Integrated next button with motion detection
 11/14	2	Finishing touches. Created setup tool. 
+12/12	2	Rewokring setup tool.
+12/13	2	Changing initialization.
