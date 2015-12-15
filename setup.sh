@@ -2,7 +2,7 @@
 
 cd ~
 echo "creating directories..."
-mkdir motionPlayer && cd motionPlayer
+mkdir motionPlayer && cd motionPlayer && \
 mkdir videos
 echo "checking if VLC player is installed..."
 if [ -a /Applications/VLC.app ] # check if file exists
