@@ -1,6 +1,6 @@
 The MotionPlayer interfaces with VLC media player and skips to a new video when a new person enters the field of view of the webcam. This project was written using Processing and utilizes the [OpenCV processing library](https://github.com/atduskgreg/opencv-processing) developed by Ben Borenstein (thank you!) 
 
-Use the following command to install:
+Open terminal (command + space terminal) and paste the following to install:
 ```
 curl https://raw.githubusercontent.com/edsammy/motionPlayer/master/setup.sh | bash
 ```
