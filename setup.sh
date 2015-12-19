@@ -14,7 +14,7 @@ else
     hdiutil attach -quiet vlc-2.2.1.dmg && \
     cd /Volumes/vlc-2.2.1 && \
     echo "enter password to copy VLC into Applications folder..."
-    sudo cp -R VLC.app Applications
+    cp -R VLC.app Applications # may need to use sudo
 fi
 cd ~/motionPlayer
 echo "editing VLC settings file..."
@@ -25,13 +25,13 @@ if [ -d ~/Library/Preferences/org.videolan.vlc ] # check if directory exists
 else
     echo "creating VLC settings folder..."
     echo "enter password to create folder..."
-    sudo mkdir ~/Library/Preferences/org.videolan.vlc
+    mkdir ~/Library/Preferences/org.videolan.vlc # may need to use sudo
 fi
 sudo cp vlcrc ~/Library/Preferences/org.videolan.vlc
 echo "downloading motionPlayer.zip..."
-curl -O --silent https://raw.githubusercontent.com/edsammy/motionPlayer/master/motionPlayer.zip
+curl -O https://raw.githubusercontent.com/edsammy/motionPlayer/master/motionPlayer.zip
 echo "unzipping app..."
-unzip motionPlayer.zip
+unzip -q motionPlayer.zip # unzip quietly
 echo "cleaning up..."
 cd /Volumes && \
 hdiutil detach -quiet vlc-2.2.1 && \
