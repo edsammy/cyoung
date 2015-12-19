@@ -27,7 +27,7 @@ else
     echo "enter password to create folder..."
     mkdir ~/Library/Preferences/org.videolan.vlc # may need to use sudo
 fi
-sudo cp vlcrc ~/Library/Preferences/org.videolan.vlc
+cp vlcrc ~/Library/Preferences/org.videolan.vlc # may need to use sudo
 echo "downloading motionPlayer.zip..."
 curl -O https://raw.githubusercontent.com/edsammy/motionPlayer/master/motionPlayer.zip
 echo "unzipping app..."
@@ -36,7 +36,7 @@ echo "cleaning up..."
 cd /Volumes && \
 hdiutil detach -quiet vlc-2.2.1 && \
 cd ~/motionPlayer && \
-rm -rf vlc-2.2.1.dmg && \
-rm -rf vlcrc && \
-rm -rf motionPlayer.zip
+rm vlc-2.2.1.dmg
+rm vlcrc
+rm motionPlayer.zip
 echo "complete!"
