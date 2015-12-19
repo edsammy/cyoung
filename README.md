@@ -2,6 +2,6 @@ The MotionPlayer interfaces with VLC media player and skips to a new video when 
 
 Use the following command to install:
 ```
-curl https://raw.githubusercontent.com/edsammy/cyoung/master/setup.sh | bash
+curl https://raw.githubusercontent.com/edsammy/motionPlayer/master/setup.sh | bash
 ```
 This will setup the file system, install VLC media player, move it into the Applications directory, and apply the correct settings to use the Motion Video Player.
