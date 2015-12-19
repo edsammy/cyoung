@@ -24,7 +24,7 @@ if [ -d ~/Library/Preferences/org.videolan.vlc ] # check if directory exists
     echo "VLC settings folder already exists..."
 else
     echo "creating VLC settings folder..."
-    echo "enter password to create folder..."
+    #echo "enter password to create folder..."
     mkdir ~/Library/Preferences/org.videolan.vlc
 fi
 cp vlcrc ~/Library/Preferences/org.videolan.vlc
