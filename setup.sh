@@ -36,7 +36,7 @@ echo "cleaning up..."
 cd /Volumes && \
 hdiutil detach -quiet vlc-2.2.1 && \
 cd ~/motionPlayer && \
-rm vlc-2.2.1.dmg && \
-rm vlcrc && \
-rm motionPlayer.zip
+rm -rf vlc-2.2.1.dmg && \
+rm -rf vlcrc && \
+rm -rf motionPlayer.zip
 echo "complete!"
