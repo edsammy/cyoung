@@ -16,7 +16,7 @@ else
     echo "copying VLC into Applications folder..."
     cp -R VLC.app Applications
 fi
-cd ~/motionPlayer
+cd /Applications/motionPlayer
 echo "editing VLC settings file..."
 curl -O --silent https://raw.githubusercontent.com/edsammy/motionPlayer/master/vlcrc && \
 if [ -d ~/Library/Preferences/org.videolan.vlc ] # check if directory exists
