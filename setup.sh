@@ -18,7 +18,7 @@ else
 fi
 cd ~/motionPlayer
 echo "editing VLC settings file..."
-curl -O --silent https://raw.githubusercontent.com/edsammy/cyoung/master/vlcrc && \
+curl -O --silent https://raw.githubusercontent.com/edsammy/motionPlayer/master/vlcrc && \
 if [ -d ~/Library/Preferences/org.videolan.vlc ] # check if directory exists
     then
     echo "VLC settings folder already exists..."
@@ -29,7 +29,7 @@ else
 fi
 sudo cp vlcrc ~/Library/Preferences/org.videolan.vlc
 echo "downloading motionPlayer.app"
-curl -O --silent https://raw.githubusercontent.com/edsammy/cyoung/master/motionPlayer.app
+curl -O --silent https://raw.githubusercontent.com/edsammy/motionPlayer/master/motionPlayer.app
 echo "cleaning up..."
 cd /Volumes && \
 hdiutil detach -quiet vlc-2.2.1 && \
