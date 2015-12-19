@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /Applications
+cd ~/desktop
 echo "creating directories..."
 mkdir motionPlayer && cd motionPlayer && \
 mkdir videos
@@ -16,7 +16,7 @@ else
     echo "copying VLC into Applications folder..."
     cp -R VLC.app Applications
 fi
-cd /Applications/motionPlayer
+cd ~/desktop/motionPlayer
 echo "editing VLC settings file..."
 curl -O --silent https://raw.githubusercontent.com/edsammy/motionPlayer/master/vlcrc && \
 if [ -d ~/Library/Preferences/org.videolan.vlc ] # check if directory exists
@@ -35,7 +35,7 @@ unzip -q motionPlayer.zip # unzip quietly
 echo "cleaning up..."
 cd /Volumes && \
 hdiutil detach -quiet vlc-2.2.1
-cd /Applications/motionPlayer
+cd ~/desktop/motionPlayer
 rm vlc-2.2.1.dmg
 rm vlcrc
 rm motionPlayer.zip
