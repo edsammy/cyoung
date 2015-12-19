@@ -2,10 +2,10 @@
 Motion Video Player
 code by Eddie Samuels for Caroline Young
 
-This sketch relies on a file named settings.txt which contains the 
-full path of the videos one wants to play on the first line and the
-full path of VLC.app. You can create the file manually or use the
-included setup tool (setup.app).
+This sketch iterfaces with VLC media player and skips to the next video
+when motion is detected using OpenCV.
+
+Check out https://github.com/edsammy/cyoung for installation instructions.
 */
 
 import gab.opencv.*;
