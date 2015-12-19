@@ -35,7 +35,7 @@ unzip -q motionPlayer.zip # unzip quietly
 echo "cleaning up..."
 cd /Volumes && \
 hdiutil detach -quiet vlc-2.2.1
-cd ~/motionPlayer && \
+cd ~/motionPlayer
 rm vlc-2.2.1.dmg
 rm vlcrc
 rm motionPlayer.zip
