@@ -28,12 +28,15 @@ else
     sudo mkdir ~/Library/Preferences/org.videolan.vlc
 fi
 sudo cp vlcrc ~/Library/Preferences/org.videolan.vlc
-echo "downloading motionPlayer.app"
-curl -O --silent https://raw.githubusercontent.com/edsammy/motionPlayer/master/motionPlayer.app
+echo "downloading motionPlayer.zip..."
+curl -O --silent https://raw.githubusercontent.com/edsammy/motionPlayer/master/motionPlayer.zip
+echo "unzipping app..."
+unzip motionPlayer.zip
 echo "cleaning up..."
 cd /Volumes && \
 hdiutil detach -quiet vlc-2.2.1 && \
 cd ~/motionPlayer && \
 rm vlc-2.2.1.dmg && \
-rm vlcrc
+rm vlcrc && \
+rm motionPlayer.zip
 echo "complete!"
