@@ -197,3 +197,10 @@ void playNextVideo() {
     exit();
   }
 }
+
+void dispose() {
+  // Make sure VLC quits when the motionPlayer closes
+  String[] killVLC = {"pkill", "-9", "VLC"};
+  exec(killVLC);
+}
+  
