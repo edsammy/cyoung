@@ -1,9 +1,22 @@
 #!/bin/bash
 
 cd ~/desktop
-echo "creating directories..."
-mkdir motionPlayer && cd motionPlayer && \
-mkdir videos
+echo "checking directories..."
+if [ -d ~/desktop/motionPlayer ]
+    then
+    echo "main directory exists..."
+else
+    echo "creating main directory..."
+    mkdir motionPlayer
+fi
+cd motionPlayer
+if [ -d ~/desktop/motionPlayer/videos ]
+    then
+    echo "videos folder exists..."
+else
+    echo "ceating videos directory"
+    mkdir videos
+fi
 echo "checking if VLC player is installed..."
 if [ -a /Applications/VLC.app ] # check if file exists
     then
@@ -45,6 +58,5 @@ if [ -a /Library/PreferencePanes/JavaControlPanel.prefpane ] # check if JRE is i
 else
     echo "***** setup not complete! ******"
     echo "You must install the Java Runtime Environment (JRE) in order to run the MotionPlayer"
-    echo "Please install from http://www.java.com/en/download"
-    echo "After installing the JRE you DO NOT need to run this setup tool again."
+    echo "Please install from http://www.java.com/en/download before running the MotionPlayer."
 fi
