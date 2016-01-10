@@ -39,4 +39,12 @@ cd ~/desktop/motionPlayer
 rm vlc-2.2.1.dmg
 rm vlcrc
 rm motionPlayer.zip
-echo "complete!"
+if [ -a /Library/PreferencePanes/JavaControlPanel.prefpane ] # check if JRE is installed
+    then
+    echo "complete!"
+else
+    echo "***** setup not complete! ******"
+    echo "You must install the Java Runtime Environment (JRE) in order to run the MotionPlayer"
+    echo "Please install from http://www.java.com/en/download"
+    echo "After installing the JRE you DO NOT need to run this setup tool again."
+fi
