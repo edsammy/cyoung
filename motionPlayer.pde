@@ -11,6 +11,10 @@ Check out https://github.com/edsammy/cyoung for installation instructions.
 import gab.opencv.*;
 import processing.video.*;
 
+// Packages used for getting unique camera names
+import java.util.HashSet;
+import java.util.Arrays;
+
 // Packages used to communicate with VLC command line tool
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -22,47 +26,75 @@ Capture rawVideo; // video object used for webcam capture
 OpenCV cv; // open cv object to do processing of motion
 
 // Variable decalarations
-boolean debug, initialFrameCaptured, personInView, queueNextVideo, vlcLoaded, run, countdown;
+boolean debug, initialFrameCaptured, personInView, queueNextVideo, camsListed, camSelected, setupComplete, vlcLoaded, run, countdown;
 PImage initialFrame, raw, diff, threshold, contour;
 float area;
 ArrayList<Contour> contours;
 BufferedWriter out;
 BufferedReader in;
-String videosPath, VLCPath, dateStamp, timeStamp;
+String videosPath, VLCPath, camSelectionName, dateStamp, timeStamp;
+String[] camNames;
 int startTime, currentTime, countDownDelay, elapsedTime;
 
 void setup() {
   debug = false;
+  camsListed = false;
+  camSelected = false;
+  setupComplete = false;
   vlcLoaded = false;
   run = false;
+
+  countDownDelay = 5500;
+
+  videosPath = sketchPath()+"/videos";
+  VLCPath = "/Applications/VLC.app";
+
+  // get datetime stamps for error logging
+  dateStamp = String.valueOf(month())+"/"+String.valueOf(day())+"/"+String.valueOf(year());
+  timeStamp = String.valueOf(hour())+":"+String.valueOf(minute());
 
   size(640, 580);
   textSize(32);
   background(100);
   text("Motion Video Player", 170, 55); 
+ 
   textSize(14);
-  text("Press 's' to capture background and begin motion detection", 120, 150);
-  
-  videosPath = sketchPath()+"/videos";
-  VLCPath = "/Applications/VLC.app"; 
-  
-  rawVideo = new Capture(this, 320, 240);
-  cv = new OpenCV(this, 320, 240);
-  
-  rawVideo.start(); // Start webcam capturing
-  initialFrameCaptured = false;
-  personInView = false;
-  queueNextVideo = true;
-  
-  // get datetime stamps for error logging
-  dateStamp = String.valueOf(month())+"/"+String.valueOf(day())+"/"+String.valueOf(year());
-  timeStamp = String.valueOf(hour())+":"+String.valueOf(minute());
-   
-  countDownDelay = 5500;
-  textSize(20);
 }
     
 void draw() {
+  if (!camsListed) {  
+    // Get unique camera names so the user can select the internal iSight webcam or external USB webcam
+    camNames = getCameraNames();
+    
+    // Only give the user the option to select a cam if there are multiple
+    if (camNames.length > 1) {
+      text("Select which camera you want to use with the numerical keys", 100, 150);
+      for (int i = 0; i < camNames.length; i++) {
+        text((i+1) + ") " + camNames[i],160,(170+(i*20)));
+      }
+    } else {
+      camSelectionName = camNames[0];
+      camSelected = true;
+    }
+    camsListed = true; 
+  }
+  
+  if (camSelected) { // dont start the camera capture until a cam has been selected
+    if (!setupComplete) {
+      text("Press 's' to capture background and begin motion detection", 120, 150);
+      
+      rawVideo = new Capture(this, 320, 240, camSelectionName); // (parent, width, height, camName)
+      cv = new OpenCV(this, 320, 240);
+    
+      rawVideo.start(); // Start webcam capturing
+      initialFrameCaptured = false;
+      personInView = false;
+      queueNextVideo = true;
+      setupComplete = true;
+    }
+  }
+  
+  // Run a countdown timer and show the user before capturing the background frame
   if (!run) {
     if (countdown) {
       if (rawVideo.available()) {
@@ -73,7 +105,7 @@ void draw() {
       elapsedTime = currentTime - startTime;
       if (elapsedTime < countDownDelay) {
         text("capturing background in:", 25, 155);
-        text((countDownDelay - elapsedTime)/(1000), 280, 155);
+        text((countDownDelay - elapsedTime)/(1000), 200, 155);
       }
       else {
         countdown = false;
@@ -156,6 +188,21 @@ void draw() {
   }
 }
 
+// Returns unique cameras attached to the computer
+// https://forum.processing.org/two/discussion/11643/capture-list-function-finds-wrong-number-of-cameras
+String[] getCameraNames()
+{
+  String[] list = Capture.list();
+  for (int i=0; i < list.length; i++)
+  {
+    String[] chunks = split(list[i], ',');
+    chunks = split(chunks[0], '=');
+    list[i] = chunks[1];
+  }
+  String[] unique = new HashSet<String>(Arrays.asList(list)).toArray(new String[0]);
+  return unique;
+}
+
 void initVLC() {
   String[] openVLC = {VLCPath+"/Contents/MacOS/VLC", "--fullscreen","--loop", "--random", "--repeat", "--mouse-hide-timeout=100", "--no-video-title-show", videosPath};
   
@@ -176,9 +223,25 @@ void initVLC() {
 }
 
 void keyPressed() {
-  if (key == 's') {
-    startTime = millis();
-    countdown = true;
+  if (camsListed) {
+    if (!camSelected) {
+      int keyASCII = int(key);
+      if (keyASCII >= 49 && keyASCII <= (camNames.length + 48)) { // if key 1 to the max number of elements in camNames is pressed
+        camSelectionName = camNames[keyASCII - 49]; // convert the ASCII number back to its numerical key minus 1 since arrays are 0 indexed
+        camSelected = true;
+        
+        // Erase the screen so the user knows the selection was made
+        textSize(32);
+        background(100);
+        text("Motion Video Player", 170, 55); 
+        textSize(14);
+      }
+  } else {
+      if (key == 's') {
+        startTime = millis();
+        countdown = true;
+      }
+    }
   }
 }
 
@@ -198,7 +261,7 @@ void playNextVideo() {
   }
 }
 
-void dispose() {
+void dispose() { // runs on exit of sketch
   // Make sure VLC quits when the motionPlayer closes
   String[] killVLC = {"pkill", "-9", "VLC"};
   exec(killVLC);
