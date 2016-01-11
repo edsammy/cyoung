@@ -4,7 +4,7 @@ cd ~/desktop
 echo "checking for previous versions of motionPlayer..."
 if [ -a ~/desktop/motionPlayer/motionPlayer.app ]
     then
-    "removing previous version..."
+    echo "removing previous version..."
     rm -r ~/desktop/motionPlayer/motionPlayer.app
 fi
 echo "checking directories..."
