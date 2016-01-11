@@ -1,6 +1,12 @@
 #!/bin/bash
 
 cd ~/desktop
+echo "checking for previous versions of motionPlayer..."
+if [ -a ~/desktop/motionPlayer/motionPlayer.app ]
+    then
+    "removing previous version..."
+    rm -r motionPlayer.app
+fi
 echo "checking directories..."
 if [ -d ~/desktop/motionPlayer ]
     then
@@ -14,7 +20,7 @@ if [ -d ~/desktop/motionPlayer/videos ]
     then
     echo "videos folder exists..."
 else
-    echo "ceating videos directory"
+    echo "creating videos directory..."
     mkdir videos
 fi
 echo "checking if VLC player is installed..."
