@@ -34,10 +34,10 @@ BufferedWriter out;
 BufferedReader in;
 String videosPath, VLCPath, camSelectionName, dateStamp, timeStamp;
 String[] camNames;
-int startTime, currentTime, countDownDelay, elapsedTime;
+int captureWidth, captureHeight, startTime, currentTime, countDownDelay, elapsedTime;
 
 void setup() {
-  debug = false;
+  debug = true;
   camsListed = false;
   camSelected = false;
   setupComplete = false;
@@ -77,14 +77,16 @@ void draw() {
       camSelected = true;
     }
     camsListed = true; 
+    captureWidth = 320;
+    captureHeight = 240;
   }
   
   if (camSelected) { // dont start the camera capture until a cam has been selected
     if (!setupComplete) {
       text("Press 's' to capture background and begin motion detection", 120, 150);
       
-      rawVideo = new Capture(this, 320, 240, camSelectionName); // (parent, width, height, camName)
-      cv = new OpenCV(this, 320, 240);
+      rawVideo = new Capture(this, captureWidth, captureHeight, camSelectionName); // (parent, width, height, camName)
+      cv = new OpenCV(this, captureWidth, captureHeight);
     
       rawVideo.start(); // Start webcam capturing
       initialFrameCaptured = false;
