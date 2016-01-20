@@ -37,7 +37,7 @@ String[] camNames;
 int captureWidth, captureHeight, startTime, currentTime, countDownDelay, elapsedTime;
 
 void setup() {
-  debug = true;
+  debug = false;
   camsListed = false;
   camSelected = false;
   setupComplete = false;
@@ -53,10 +53,10 @@ void setup() {
   dateStamp = String.valueOf(month())+"/"+String.valueOf(day())+"/"+String.valueOf(year());
   timeStamp = String.valueOf(hour())+":"+String.valueOf(minute());
 
-  size(640, 580);
+  size(960, 720);
   textSize(32);
   background(100);
-  text("Motion Video Player", 170, 55); 
+  text("Motion Video Player", 320, 55); 
  
   textSize(14);
 }
@@ -68,22 +68,22 @@ void draw() {
     
     // Only give the user the option to select a cam if there are multiple
     if (camNames.length > 1) {
-      text("Select which camera you want to use with the numerical keys", 100, 150);
+      text("Select which camera you want to use with the numerical keys", 270, 150);
       for (int i = 0; i < camNames.length; i++) {
-        text((i+1) + ") " + camNames[i],160,(170+(i*20)));
+        text((i+1) + ") " + camNames[i],330,(170+(i*20)));
       }
     } else {
       camSelectionName = camNames[0];
       camSelected = true;
     }
     camsListed = true; 
-    captureWidth = 320;
-    captureHeight = 240;
+    captureWidth = 480;
+    captureHeight = 360;
   }
   
   if (camSelected) { // dont start the camera capture until a cam has been selected
     if (!setupComplete) {
-      text("Press 's' to capture background and begin motion detection", 120, 150);
+      text("Press 's' to capture background and begin motion detection", 270, 150);
       
       rawVideo = new Capture(this, captureWidth, captureHeight, camSelectionName); // (parent, width, height, camName)
       cv = new OpenCV(this, captureWidth, captureHeight);
@@ -101,7 +101,7 @@ void draw() {
     if (countdown) {
       if (rawVideo.available()) {
         rawVideo.read(); // get frame from webcam
-        image(rawVideo, 0, 100, 640, 480);
+        image(rawVideo, 0, 100, captureWidth*2, captureHeight*2);
       }
       currentTime = millis();
       elapsedTime = currentTime - startTime;
@@ -133,7 +133,7 @@ void draw() {
       if (!initialFrameCaptured) {
         initialFrame = cv.getSnapshot();
         initialFrameCaptured = true;
-        image(raw, 0, 100, 640, 480);
+        image(raw, 0, 100, captureWidth*2, captureHeight*2);
         text("background", 25, 155); 
       }
       
@@ -181,10 +181,10 @@ void draw() {
       
       // Live view from camera used for development
       if (debug) {
-        image(raw, 0,100);
-        image(diff, 320, 100);
-        image(contour, 0, 340);
-        image(threshold, 320, 340);
+        image(raw, 0, 0);
+        image(diff, captureWidth, 0);
+        image(contour, 0, captureHeight);
+        image(threshold, captureWidth, captureHeight);
       }
     }
   }
@@ -235,7 +235,7 @@ void keyPressed() {
         // Erase the screen so the user knows the selection was made
         textSize(32);
         background(100);
-        text("Motion Video Player", 170, 55); 
+        text("Motion Video Player", 320, 55); 
         textSize(14);
       }
   } else {
