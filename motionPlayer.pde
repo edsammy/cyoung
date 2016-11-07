@@ -27,7 +27,7 @@ OpenCV cv; // open cv object to do processing of motion
 
 // Variable decalarations
 boolean debug, initialFrameCaptured, personInView, queueNextVideo, camsListed, camSelected, setupComplete, vlcLoaded, run, countdown;
-PImage initialFrame, raw, diff, threshold, contour;
+PImage initialFrame, cropped, raw, diff, threshold, contour;
 float area;
 ArrayList<Contour> contours;
 BufferedWriter out;
@@ -36,8 +36,10 @@ String videosPath, VLCPath, camSelectionName, dateStamp, timeStamp;
 String[] camNames;
 int captureWidth, captureHeight, startTime, currentTime, countDownDelay, elapsedTime;
 
+int areaThresh = 50000;
+
 void setup() {
-  debug = false;
+  debug = true;
   camsListed = false;
   camSelected = false;
   setupComplete = false;
@@ -121,6 +123,7 @@ void draw() {
     }
     if (rawVideo.available()) {
       rawVideo.read(); // get frame from webcam
+      //cropped = rawVideo.get(0,0,100,100); //crop image to trigger zone
       cv.loadImage(rawVideo); // pass frame to openCV
       
       // Use color to display background to the user
@@ -160,9 +163,12 @@ void draw() {
       // Check if any contours (new things in the frame when compared to the original) exist
       if (contours.size() > 0) {
         area = contours.get(0).area();
+        if (debug) {
+          println(area);
+        }
         // See if the first contour is greater than the min area
         // (only need to look at the first one since they are sorted by size)
-        if (area >= 500) {
+        if (area >= areaThresh) {
           if (debug) println("Person in view!");
           personInView = true;
           if (queueNextVideo) {
