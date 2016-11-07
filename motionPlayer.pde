@@ -39,7 +39,7 @@ int captureWidth, captureHeight, startTime, currentTime, countDownDelay, elapsed
 int areaThresh = 50000;
 
 void setup() {
-  debug = true;
+  debug = false;
   camsListed = false;
   camSelected = false;
   setupComplete = false;
