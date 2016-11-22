@@ -27,7 +27,7 @@ OpenCV cv; // open cv object to do processing of motion
 
 // Variable decalarations
 boolean debug, initialFrameCaptured, personInView, queueNextVideo, camsListed, camSelected, setupComplete, vlcLoaded, run, countdown;
-PImage initialFrame, cropped, raw, diff, threshold, contour;
+PImage initialFrame, initialFrameFull, cropped, raw, diff, threshold, contour;
 float area;
 ArrayList<Contour> contours;
 BufferedWriter out;
@@ -36,7 +36,11 @@ String videosPath, VLCPath, camSelectionName, dateStamp, timeStamp;
 String[] camNames;
 int captureWidth, captureHeight, startTime, currentTime, countDownDelay, elapsedTime;
 
-int areaThresh = 50000;
+int areaThresh = 5000;
+int box_x = 150;
+int box_y = 100;
+int box_w = 200;
+int box_h = 150;
 
 void setup() {
   debug = false;
@@ -88,8 +92,9 @@ void draw() {
       text("Press 's' to capture background and begin motion detection", 270, 150);
       
       rawVideo = new Capture(this, captureWidth, captureHeight, camSelectionName); // (parent, width, height, camName)
-      cv = new OpenCV(this, captureWidth, captureHeight);
-    
+      cv = new OpenCV(this, box_w, box_h);
+      cropped = createImage(box_w, box_h, ARGB);
+      initialFrameFull = createImage(captureWidth, captureHeight, ARGB);
       rawVideo.start(); // Start webcam capturing
       initialFrameCaptured = false;
       personInView = false;
@@ -123,17 +128,17 @@ void draw() {
     }
     if (rawVideo.available()) {
       rawVideo.read(); // get frame from webcam
-      //cropped = rawVideo.get(0,0,100,100); //crop image to trigger zone
-      cv.loadImage(rawVideo); // pass frame to openCV
+      cropped.copy(rawVideo, box_x, box_y, box_w, box_h, 0, 0, box_w, box_h);
+      cv.loadImage(cropped); // pass frame to openCV
       
       // Use color to display background to the user
       cv.useColor();
       raw = cv.getSnapshot();
-      
       cv.useGray(); // grayscale for easier processing
       cv.blur(20);
       
       if (!initialFrameCaptured) {
+        initialFrameFull.copy(rawVideo, 0, 0, captureWidth, captureHeight, 0, 0, captureWidth, captureHeight);
         initialFrame = cv.getSnapshot();
         initialFrameCaptured = true;
         image(raw, 0, 100, captureWidth*2, captureHeight*2);
@@ -172,7 +177,7 @@ void draw() {
           if (debug) println("Person in view!");
           personInView = true;
           if (queueNextVideo) {
-            playNextVideo();
+            playNextVideo(); 
             queueNextVideo = false;
           }
           else {
@@ -185,12 +190,23 @@ void draw() {
         queueNextVideo = true;
       }
       
+      // Display opaque live video feed over initial frame
+      image(initialFrameFull, 0, 100, captureWidth*2, captureHeight*2);
+      tint(255, 127);
+      image(rawVideo, 0, 100, captureWidth*2, captureHeight*2);
+      tint(127, 255);  // Display at full opacity
+
+      // draw trigger zone box on raw video
+      noFill();
+      stroke(255, 0, 0);
+      rect(150*2, 100*2+100, 200*2, 150*2);
+      
       // Live view from camera used for development
       if (debug) {
-        image(raw, 0, 0);
-        image(diff, captureWidth, 0);
-        image(contour, 0, captureHeight);
-        image(threshold, captureWidth, captureHeight);
+        image(cropped, 0, 100);
+        image(diff, box_w, 100);
+        image(contour, 0, box_h+100);
+        image(threshold, box_w, box_h+100);
       }
     }
   }
