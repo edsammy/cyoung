@@ -36,11 +36,11 @@ String videosPath, VLCPath, camSelectionName, dateStamp, timeStamp;
 String[] camNames;
 int captureWidth, captureHeight, startTime, currentTime, countDownDelay, elapsedTime;
 
-int areaThresh = 5000;
-int box_x = 150;
-int box_y = 100;
-int box_w = 200;
-int box_h = 150;
+int areaThresh = 3000;
+int box_x = 220;
+int box_y = 120;
+int box_w = 60;
+int box_h = 60;
 
 void setup() {
   debug = false;
@@ -199,7 +199,7 @@ void draw() {
       // draw trigger zone box on raw video
       noFill();
       stroke(255, 0, 0);
-      rect(150*2, 100*2+100, 200*2, 150*2);
+      rect(box_x*2, (box_y*2)+100, box_w*2, box_h*2);
       
       // Live view from camera used for development
       if (debug) {
